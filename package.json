@@ -1,6 +1,6 @@
 {
   "name": "universal-cookie-fastify",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "dist/plugin.js",
   "types": "dist/plugin.d.ts",
   "scripts": {
