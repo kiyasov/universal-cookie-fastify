@@ -1,0 +1,22 @@
+{
+  "name": "universal-cookie-fastify",
+  "version": "1.0.0",
+  "main": "dist/plugin.js",
+  "types": "dist/plugin.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": "git@github.com:kiyasov/universal-cookie-fastify.git",
+  "author": "kiyasov <islam7407@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "fastify-plugin": "^3.0.0",
+    "universal-cookie": "^4.0.4"
+  },
+  "devDependencies": {
+    "fastify": "^3.20.2"
+  }
+}
