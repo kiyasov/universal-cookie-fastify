@@ -9,6 +9,7 @@ import Cookies, {
   CookieChangeOptions,
   CookieSetOptions
 } from "universal-cookie";
+import cookie from "cookie";
 
 export type setCookieWrapper = (
   name: string,
@@ -24,28 +25,47 @@ declare module "fastify" {
   }
 }
 
+const setCookie = (
+  fastifyRes: FastifyReply,
+  { options, value, name }: CookieChangeOptions
+) => {
+  const expressOpt = Object.assign({}, options);
+  if (expressOpt.maxAge && options && options.maxAge) {
+    // the standard for maxAge is seconds but express uses milliseconds
+    expressOpt.maxAge = options.maxAge * 1000;
+  }
+
+  const serialized = cookie.serialize(name, value, expressOpt);
+
+  let setCookie = fastifyRes.getHeader("Set-Cookie") as string[] | string;
+
+  if (!setCookie) {
+    fastifyRes.header("Set-Cookie", serialized);
+    return fastifyRes;
+  }
+
+  if (typeof setCookie === "string") {
+    setCookie = [setCookie];
+  }
+
+  setCookie.push(serialized);
+  fastifyRes.removeHeader("Set-Cookie");
+  fastifyRes.header("Set-Cookie", setCookie);
+  return fastifyRes;
+};
+
 const universalCookies = (
   fastifyReq: FastifyRequest,
-  _fastifyRes: FastifyReply,
+  fastifyRes: FastifyReply,
   next: DoneFuncWithErrOrRes
 ) => {
   fastifyReq.universalCookies = new Cookies(fastifyReq?.headers?.cookie || "");
   fastifyReq.universalCookies.addChangeListener(
     (change: CookieChangeOptions) => {
-      if (!fastifyReq.cookie) {
-        return;
-      }
-
       if (change.value === undefined) {
-        fastifyReq.clearCookie(change.name, change.options);
+        setCookie(fastifyRes, change); // clearCookie
       } else {
-        const expressOpt = Object.assign({}, change.options);
-        if (expressOpt.maxAge && change.options && change.options.maxAge) {
-          // the standard for maxAge is seconds but express uses milliseconds
-          expressOpt.maxAge = change.options.maxAge * 1000;
-        }
-
-        fastifyReq.cookie(change.name, change.value, expressOpt);
+        setCookie(fastifyRes, change);
       }
     }
   );

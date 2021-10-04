@@ -1,6 +1,6 @@
 {
   "name": "universal-cookie-fastify",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "dist/plugin.js",
   "types": "dist/plugin.d.ts",
   "scripts": {
@@ -13,6 +13,7 @@
   "author": "kiyasov <islam7407@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "cookie": "^0.4.1",
     "fastify-plugin": "^3.0.0",
     "universal-cookie": "^4.0.4"
   },
