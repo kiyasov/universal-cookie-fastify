@@ -30,6 +30,11 @@ const setCookie = (
   { options, value, name }: CookieChangeOptions
 ) => {
   const expressOpt = Object.assign({}, options);
+
+  if (value === undefined) {
+    expressOpt.expires = new Date(1); // clearCookie
+  }
+
   if (expressOpt.maxAge && options && options.maxAge) {
     // the standard for maxAge is seconds but express uses milliseconds
     expressOpt.maxAge = options.maxAge * 1000;
@@ -62,11 +67,7 @@ const universalCookies = (
   fastifyReq.universalCookies = new Cookies(fastifyReq?.headers?.cookie || "");
   fastifyReq.universalCookies.addChangeListener(
     (change: CookieChangeOptions) => {
-      if (change.value === undefined) {
-        setCookie(fastifyRes, change); // clearCookie
-      } else {
-        setCookie(fastifyRes, change);
-      }
+      setCookie(fastifyRes, change);
     }
   );
 
